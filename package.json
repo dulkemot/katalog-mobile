@@ -1,0 +1,1 @@
+{"name":"katalog-mobile","type":"module","private":false,"version":"1.0.0","description":"Katalog produk mobile dengan pencarian dan order via WhatsApp","scripts":{"dev":"astro dev","build":"astro build","preview":"astro preview"},"dependencies":{"astro":"^4.16.0"},"engines":{"node":">=18"}}

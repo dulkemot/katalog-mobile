@@ -1,0 +1,81 @@
+---
+const WA_NUMBER = "6282340336561";
+const products = [
+  { n: "Minyak Goreng 900ml (dus)", h: 197000, k: "Sembako", e: "🛢️" },
+  { n: "Beras Medium 5kg", h: 68000, k: "Sembako", e: "🍚" },
+  { n: "Terigu Protein Sedang 1kg", h: 13500, k: "Sembako", e: "🌾" },
+  { n: "Gula Pasir 1kg", h: 17500, k: "Sembako", e: "🍬" },
+  { n: "Kopi Tubruk 250g", h: 32000, k: "Minuman", e: "☕" },
+  { n: "Teh Celup isi 25", h: 14500, k: "Minuman", e: "🍵" },
+  { n: "Susu UHT Full Cream 1L", h: 19900, k: "Minuman", e: "🥛" },
+  { n: "Air Mineral 600ml (dus)", h: 52000, k: "Minuman", e: "💧" },
+  { n: "Mie Instan Goreng (karton)", h: 118000, k: "Makanan", e: "🍜" },
+  { n: "Sarden Kaleng Besar", h: 14500, k: "Makanan", e: "🐟" },
+  { n: "Saos Sambal 550ml", h: 22000, k: "Makanan", e: "🌶️" },
+  { n: "Permen Mint (pack)", h: 25000, k: "Snack", e: "🍬" },
+  { n: "Roti Coklat (pack isi 10)", h: 18000, k: "Snack", e: "🍞" },
+  { n: "Kerupuk Bawang 500g", h: 16000, k: "Snack", e: "🍘" },
+];
+const cats = ["Semua", ...new Set(products.map(p => p.k))];
+const rp = n => "Rp " + n.toLocaleString("id-ID");
+---
+<html lang="id"><head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0B1526" />
+<title>Katalog Mobile — Order via WA</title>
+<meta name="description" content="Katalog produk mobile: cari, filter kategori, pesan via WhatsApp." />
+<style is:global>
+*{box-sizing:border-box}body{margin:0;background:#0B1526;color:#E7EEF7;font-family:Inter,'Segoe UI',system-ui,Arial}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 40px}
+header{position:sticky;top:0;z-index:10;background:rgba(11,21,38,.95);backdrop-filter:blur(10px);padding:14px 0 10px;border-bottom:1px solid #22365A}
+header b{font-size:18px}header small{display:block;color:#8DBDFF;font-size:12px}
+.search{width:100%;padding:13px 16px;border-radius:12px;border:1px solid #2A3F5F;background:#111F36;color:#E7EEF7;font-size:16px;margin-top:12px}
+.chips{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px}
+.chip{flex:none;border:1px solid #2A3F5F;background:transparent;color:#BFD2EC;border-radius:100px;padding:8px 16px;font-size:13px}
+.chip.on{background:#FF8A00;border-color:#FF8A00;color:#13100A;font-weight:800}
+.count{font-size:12px;color:#8DBDFF;margin:12px 0 0;font-family:monospace}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.card{background:#111F36;border:1px solid #22365A;border-radius:14px;overflow:hidden}
+.thumb{font-size:44px;text-align:center;padding:18px 0 8px;background:linear-gradient(135deg,#16294a,#0e1b31)}
+.card .t{padding:12px}.card b{font-size:13.5px;display:block;min-height:38px}
+.price{color:#FF8A00;font-weight:800;margin:6px 0 10px}
+.btn{display:block;text-align:center;background:#25D366;color:#06281A;font-weight:800;padding:11px;border-radius:10px;text-decoration:none;font-size:14px}
+.empty{text-align:center;color:#6B84A3;padding:32px 0;font-size:14px;grid-column:1/-1}
+.cat{font-size:11px;color:#8DBDFF}
+@media(min-width:520px){.grid{grid-template-columns:1fr 1fr 1fr}}
+</style></head>
+<body><div class="wrap">
+<header><b>🛒 Katalog Mobile</b><small>Contoh Niaga — pesan langsung via WhatsApp</small></header>
+<input class="search" id="q" placeholder="🔍 Cari produk... (cth: kopi)" />
+<div class="chips" id="chips"></div>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+</div>
+
+<script define:vars={{ products, cats, waNumber: WA_NUMBER }}>
+const rp = n => "Rp " + n.toLocaleString("id-ID");
+let cat = "Semua";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+chips.innerHTML = cats.map(c => `<button class="chip${c === "Semua" ? " on" : ""}" data-c="${c}">${c}</button>`).join("");
+function render() {
+  const q = document.getElementById("q").value.toLowerCase();
+  const rows = products.filter(p => (cat === "Semua" || p.k === cat) && p.n.toLowerCase().includes(q));
+  count.textContent = rows.length + " produk";
+  grid.innerHTML = rows.length ? rows.map((p, i) => {
+    const txt = encodeURIComponent(`Halo, saya mau pesan:%0A- ${p.n}%0A${rp(p.h)}%0A%0ANama: %0AAlamat: `);
+    return `<div class="card"><div class="thumb">${p.e}</div><div class="t">
+      <span class="cat">${p.k}</span><b>${esc(p.n)}</b>
+      <div class="price">${rp(p.h)}</div>
+      <a class="btn" href="https://wa.me/${waNumber}?text=${txt}">Pesan WA</a>
+    </div></div>`;
+  }).join("") : `<div class="empty">Tidak ketemu. Coba kata lain.</div>`;
+}
+chips.onclick = e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  b.classList.add("on"); cat = b.dataset.c; render();
+};
+document.getElementById("q").oninput = render;
+render();
+</script>
+</body></html>
